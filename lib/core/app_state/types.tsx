@@ -1,0 +1,5 @@
+ export const LOGIN = "LOGIN"
+ export const LOGOUT = "LOGOUT"
+ export const GET_USER_BOOKS  = "GET_USER_BOOKS"
+ export const ADD_TO_FAVORITES = "ADD_TO_FAVORITES"
+ export const REMOVE_FROM_FAVORITES = "REMOVE_FROM_FAVORITES"
