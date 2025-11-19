@@ -39,16 +39,51 @@ export const getUserData = () => {
   };
 };
 
-export const addToFavorites = (book: any) => {
+export const addToFavorites = (book: any, userId: string) => {
+  if (!book || !book.id) {
+    console.error('addToFavorites: Invalid book', book);
+    return {
+      type: ADD_TO_FAVORITES,
+      payload: null // Will be rejected by reducer
+    };
+  }
+  if (!userId) {
+    console.error('addToFavorites: Invalid userId', userId);
+    return {
+      type: ADD_TO_FAVORITES,
+      payload: null // Will be rejected by reducer
+    };
+  }
   return {
     type: ADD_TO_FAVORITES,
-    payload: book
+    payload: { book, userId }
   };
 };
 
-export const removeFromFavorites = (book: any) => {
+export const removeFromFavorites = (book: any, userId: string) => {
+  if (!book || !book.id) {
+    console.error('removeFromFavorites: Invalid book', book);
+    return {
+      type: REMOVE_FROM_FAVORITES,
+      payload: null // Will be rejected by reducer
+    };
+  }
+  if (!userId) {
+    console.error('removeFromFavorites: Invalid userId', userId);
+    return {
+      type: REMOVE_FROM_FAVORITES,
+      payload: null // Will be rejected by reducer
+    };
+  }
   return {
     type: REMOVE_FROM_FAVORITES,
-    payload: book
+    payload: { book, userId }
+  };
+};
+
+export const setCurrentUserId = (userId: string | null) => {
+  return {
+    type: "SET_CURRENT_USER_ID",
+    payload: userId
   };
 };

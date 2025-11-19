@@ -10,22 +10,33 @@ import DynamicHeader from '../../../core/components/headercomponet';
 import { COLORS } from '../../../core/constants/app_constants';
 import { TextInput, Avatar } from 'react-native-paper';
 import OrderSummaryModal from '../../payments/components/OrderSummaryModal';
+import { userAuth } from '../../../features/auth/repositry/authContextProvider';
 
 const FavoritesScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { favorites } = useSelector((state: RootState) => state.userData);
+  const { user } = userAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
   
-  const filteredFavorites = favorites.filter((book: any) => 
+  // Filter favorites by current user ID and extract books
+  const userFavorites = user 
+    ? favorites
+        .filter((fav: any) => fav.userId === user.id)
+        .map((fav: any) => fav.book)
+    : [];
+  
+  const filteredFavorites = userFavorites.filter((book: any) => 
     book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     book.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleFavoritePress = (book: any) => {
-    dispatch(removeFromFavorites(book));
+    if (user) {
+      dispatch(removeFromFavorites(book, user.id));
+    }
   };
 
   const handleBuyNow = (book: any) => {
@@ -77,7 +88,7 @@ const FavoritesScreen = () => {
         </View>
       </View>
       
-      {favorites.length === 0 ? (
+      {userFavorites.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No favorites yet</Text>
           <Text style={styles.emptySubtext}>Add books to your favorites to see them here</Text>

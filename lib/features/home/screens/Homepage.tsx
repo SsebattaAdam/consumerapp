@@ -8,13 +8,16 @@ import { Avatar, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BookSection from '../componets/BookSection';
 import booksData from '../../../core/static_data/booksData';
+import { userAuth } from '../../auth/repositry/authContextProvider';
 
 
 const Homepage = () => {
 
-  const { username, isSignedIn, userBooks } = useSelector((state: RootState) => state.userData);
-
+  const { userBooks } = useSelector((state: RootState) => state.userData);
+  const { user } = userAuth();
   const dispatch = useDispatch();
+  
+  const displayUsername = user?.username || 'User';
 
   return (
     <SafeAreaView style={styles.safearea} edges={['top']}>
@@ -33,7 +36,7 @@ const Homepage = () => {
 
             <View style={styles.upperContainer}>
               <DynamicHeader 
-                username={` Good Morning, ${username}`}
+                username={` Good Morning, ${displayUsername}`}
                 leftIcon="account-circle"
                 rightIcon="bell"
                 onRightPress={undefined}

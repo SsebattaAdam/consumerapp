@@ -72,7 +72,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         }
       ]}
       outlineStyle={{ borderRadius: 12 }}
-      activeOutlineColor="blue"
+      activeOutlineColor="#1C7A68"
       outlineColor="#ccc"           
     />
   );

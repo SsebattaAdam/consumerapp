@@ -10,29 +10,68 @@ import DynamicHeader from '../../../core/components/headercomponet';
 import { COLORS } from '../../../core/constants/app_constants';
 import { TextInput, Avatar } from 'react-native-paper';
 import OrderSummaryModal from '../../payments/components/OrderSummaryModal';
+import { userAuth } from '../../../features/auth/repositry/authContextProvider';
 
 const BookListScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
   const { favorites } = useSelector((state: RootState) => state.userData);
+  const { user, isLoading: authLoading } = userAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
   
-  const { title, data } = route.params as { title: string; data: any[] };
+  const routeParams = route.params as { title: string; data: any[] } | undefined;
+  const title = routeParams?.title || 'Books';
+  const data = routeParams?.data || [];
   
-  const filteredData = data.filter(book => 
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    book.author.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter data: if search query is empty, show all valid books; otherwise filter by search
+  const filteredData = data.filter(book => {
+    if (!book || !book.id) return false;
+    
+    // If no search query, show all books
+    if (!searchQuery.trim()) {
+      return true;
+    }
+    
+    // Otherwise, filter by title or author
+    const query = searchQuery.toLowerCase();
+    const bookTitle = book.title?.toLowerCase() || '';
+    const bookAuthor = book.author?.toLowerCase() || '';
+    
+    return bookTitle.includes(query) || bookAuthor.includes(query);
+  });
 
   const handleFavoritePress = (book: any) => {
-    const isFavorite = favorites.some((fav: any) => fav.id === book.id);
-    if (isFavorite) {
-      dispatch(removeFromFavorites(book));
-    } else {
-      dispatch(addToFavorites(book));
+    console.log('handleFavoritePress called with:', { book, user });
+    
+    if (!user || !user.id) {
+      console.warn('Cannot add to favorites: User not logged in', { user });
+      return;
+    }
+    
+    if (!book || !book.id) {
+      console.warn('Cannot add to favorites: Invalid book', { book });
+      return;
+    }
+    
+    try {
+      const isBookFavorite = favorites.some(
+        (fav: any) => fav && fav.book && fav.book.id === book.id && fav.userId === user.id
+      );
+      
+      console.log('Is book favorite?', isBookFavorite, { bookId: book.id, userId: user.id });
+      
+      if (isBookFavorite) {
+        console.log('Removing from favorites');
+        dispatch(removeFromFavorites(book, user.id));
+      } else {
+        console.log('Adding to favorites');
+        dispatch(addToFavorites(book, user.id));
+      }
+    } catch (error) {
+      console.error('Error in handleFavoritePress:', error);
     }
   };
 
@@ -47,8 +86,39 @@ const BookListScreen = () => {
   };
 
   const isFavorite = (bookId: number) => {
-    return favorites.some((fav: any) => fav.id === bookId);
+    if (!user || !user.id) return false;
+    if (!favorites || favorites.length === 0) return false;
+    return favorites.some(
+      (fav: any) => fav && fav.book && fav.book.id === bookId && fav.userId === user.id
+    );
   };
+
+  // Debug: Log data to see what we're getting
+  console.log('BookListScreen - Route params:', routeParams);
+  console.log('BookListScreen - Data length:', data.length);
+  console.log('BookListScreen - Filtered data length:', filteredData.length);
+  console.log('BookListScreen - User:', user);
+  console.log('BookListScreen - Auth loading:', authLoading);
+
+  // Show loading state if auth is still loading
+  if (authLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.headerContainer}>
+          <DynamicHeader
+            username={title}
+            leftIcon="arrow-left"
+            rightIcon="bell"
+            onLeftPress={() => navigation.goBack()}
+            onRightPress={undefined}
+          />
+        </View>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -90,26 +160,43 @@ const BookListScreen = () => {
         </View>
       </View>
       
-      <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <BookCard
-            book={item}
-            isFavorite={isFavorite(item.id)}
-            onFavoritePress={handleFavoritePress}
-            onBuyNowPress={handleBuyNow}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No books found</Text>
-            <Text style={styles.emptySubtext}>Try a different search term</Text>
-          </View>
-        }
-      />
+      {data.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No books available</Text>
+          <Text style={styles.emptySubtext}>Please try again later</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredData}
+          keyExtractor={(item, index) => item?.id?.toString() || `book-${index}`}
+          renderItem={({ item }) => {
+            if (!item || !item.id) return null;
+            try {
+              return (
+                <BookCard
+                  book={item}
+                  isFavorite={isFavorite(item.id)}
+                  onFavoritePress={handleFavoritePress}
+                  onBuyNowPress={handleBuyNow}
+                />
+              );
+            } catch (error) {
+              console.error('Error rendering book card:', error, item);
+              return null;
+            }
+          }}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No books found</Text>
+              <Text style={styles.emptySubtext}>
+                {searchQuery ? 'Try a different search term' : 'No books available'}
+              </Text>
+            </View>
+          }
+        />
+      )}
 
       <OrderSummaryModal
         visible={showOrderModal}

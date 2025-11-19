@@ -24,7 +24,9 @@ const BookSection: React.FC<Props> = ({ title, data, onViewAll }) => {
     if (onViewAll) {
       onViewAll();
     } else {
-      navigation.navigate('BookList' as never, { title, data } as never);
+      // Ensure data is valid before navigating
+      const validData = (data || []).filter(book => book && book.id);
+      navigation.navigate('BookList' as never, { title, data: validData } as never);
     }
   };
 
@@ -50,9 +52,9 @@ const BookSection: React.FC<Props> = ({ title, data, onViewAll }) => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={data}
+        data={data || []}
         horizontal
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => item?.id?.toString() || `book-${index}`}
         renderItem={renderItem}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}

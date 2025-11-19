@@ -40,7 +40,7 @@ const PaymentScreen = () => {
         amount: book.price,
         currency: FLUTTERWAVE_CONFIG.CURRENCY,
         email: userEmail,
-        phoneNumber: '', // You can add phone to Redux if needed
+        phoneNumber: '', 
         txRef: txRef,
         narration: `Payment for ${book.title}`,
         bookTitle: book.title,
@@ -52,7 +52,7 @@ const PaymentScreen = () => {
 
       if (response.status === 'success') {
         Alert.alert(
-          'Payment Successful! 🎉',
+          'Payment Successful! ',
           `Your payment of $${book.price.toFixed(2)} for "${book.title}" has been processed successfully.\n\nTransaction Reference: ${txRef}`,
           [
             {

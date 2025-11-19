@@ -1,14 +1,53 @@
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../core/app_state/app_state';
 import DynamicHeader from '../../../core/components/headercomponet';
 import { COLORS } from '../../../core/constants/app_constants';
 import { Avatar } from 'react-native-paper';
+import { userAuth } from '../../../features/auth/repositry/authContextProvider';
 
 const ProfileScreen = () => {
-  const { username, isSignedIn, favorites } = useSelector((state: RootState) => state.userData);
+  const { favorites } = useSelector((state: RootState) => state.userData);
+  const { user, onLogout } = userAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // Filter favorites by current user ID
+  const userFavorites = user 
+    ? favorites.filter((fav: any) => fav.userId === user.id)
+    : [];
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            if (onLogout) {
+              setIsLoggingOut(true);
+              try {
+                await onLogout();
+              } catch (error) {
+                console.error('Logout error:', error);
+                Alert.alert('Error', 'Failed to logout. Please try again.');
+              } finally {
+                setIsLoggingOut(false);
+              }
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -33,13 +72,13 @@ const ProfileScreen = () => {
             style={styles.profileAvatar}
             color={COLORS.offWhite}
           />
-          <Text style={styles.username}>{username}</Text>
-          <Text style={styles.userEmail}>user@example.com</Text>
+          <Text style={styles.username}>{user?.username || 'User'}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'user@example.com'}</Text>
         </View>
 
         <View style={styles.statsSection}>
           <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{favorites.length}</Text>
+            <Text style={styles.statNumber}>{userFavorites.length}</Text>
             <Text style={styles.statLabel}>Favorites</Text>
           </View>
           <View style={styles.statCard}>
@@ -89,6 +128,29 @@ const ProfileScreen = () => {
               color={COLORS.dark22}
             />
           </View>
+        </View>
+
+        <View style={styles.logoutSection}>
+          <TouchableOpacity 
+            style={[styles.logoutButton, isLoggingOut && styles.logoutButtonDisabled]}
+            onPress={handleLogout}
+            disabled={isLoggingOut}
+            activeOpacity={0.7}
+          >
+            {isLoggingOut ? (
+              <ActivityIndicator color={COLORS.white} size="small" />
+            ) : (
+              <>
+                <Avatar.Icon 
+                  size={20} 
+                  icon="logout" 
+                  style={styles.logoutIcon}
+                  color={COLORS.white}
+                />
+                <Text style={styles.logoutText}>Logout</Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -178,8 +240,34 @@ const styles = StyleSheet.create({
   menuIcon: {
     backgroundColor: 'transparent',
   },
+  logoutSection: {
+    marginTop: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.red,
+    paddingVertical: 16,
+    borderRadius: 12,
+    gap: 8,
+  },
+  logoutButtonDisabled: {
+    opacity: 0.6,
+  },
+  logoutIcon: {
+    backgroundColor: 'transparent',
+  },
+  logoutText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
 });
 
 export default ProfileScreen;
+
 
 

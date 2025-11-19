@@ -8,7 +8,7 @@ import axios, {
 } from 'axios';
 import { APP_BASE_URL } from './app_constants';
 
-// Create Axios instance
+
 const apiService: AxiosInstance = axios.create({
   baseURL: APP_BASE_URL,
   timeout: 15000,
