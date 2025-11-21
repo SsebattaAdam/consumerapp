@@ -11,6 +11,15 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		F1E982E06C904E14A742A49A /* Onest-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F708CFDB04C64BC186DF0E11 /* Onest-Black.ttf */; };
+		9E74A40EA1604EAC8CF30862 /* Onest-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 01E95CE6DE154D7291F699C7 /* Onest-Bold.ttf */; };
+		B7A7328E686143AF87F6464D /* Onest-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C6C00D62ABB436C90DFA58F /* Onest-ExtraBold.ttf */; };
+		17AB53832847418BBE369695 /* Onest-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D99C201D6274F60B3DE6286 /* Onest-ExtraLight.ttf */; };
+		6F3B79B8F5034706B9701579 /* Onest-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 492C8030CB794CA18CD302C9 /* Onest-Light.ttf */; };
+		E59268850D22419B9F6D979E /* Onest-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F1D4ED81D3B84631AF31A23C /* Onest-Medium.ttf */; };
+		2CB35DA7C4214B4E925FCBD3 /* Onest-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE45F06C954F4FA7AD56CC3C /* Onest-Regular.ttf */; };
+		DA2D89DDA9D64F42ADFFC2AC /* Onest-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4CB4124CC724412CB23CD26E /* Onest-SemiBold.ttf */; };
+		7E96713A280F452CB6AEF6D2 /* Onest-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE6754545FD4495F8E9AB60F /* Onest-Thin.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +33,15 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ecomerceApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ecomerceApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F708CFDB04C64BC186DF0E11 /* Onest-Black.ttf */ = {isa = PBXFileReference; name = "Onest-Black.ttf"; path = "../lib/core/assets/fonts/Onest-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		01E95CE6DE154D7291F699C7 /* Onest-Bold.ttf */ = {isa = PBXFileReference; name = "Onest-Bold.ttf"; path = "../lib/core/assets/fonts/Onest-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1C6C00D62ABB436C90DFA58F /* Onest-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Onest-ExtraBold.ttf"; path = "../lib/core/assets/fonts/Onest-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8D99C201D6274F60B3DE6286 /* Onest-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Onest-ExtraLight.ttf"; path = "../lib/core/assets/fonts/Onest-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		492C8030CB794CA18CD302C9 /* Onest-Light.ttf */ = {isa = PBXFileReference; name = "Onest-Light.ttf"; path = "../lib/core/assets/fonts/Onest-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F1D4ED81D3B84631AF31A23C /* Onest-Medium.ttf */ = {isa = PBXFileReference; name = "Onest-Medium.ttf"; path = "../lib/core/assets/fonts/Onest-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		DE45F06C954F4FA7AD56CC3C /* Onest-Regular.ttf */ = {isa = PBXFileReference; name = "Onest-Regular.ttf"; path = "../lib/core/assets/fonts/Onest-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4CB4124CC724412CB23CD26E /* Onest-SemiBold.ttf */ = {isa = PBXFileReference; name = "Onest-SemiBold.ttf"; path = "../lib/core/assets/fonts/Onest-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		CE6754545FD4495F8E9AB60F /* Onest-Thin.ttf */ = {isa = PBXFileReference; name = "Onest-Thin.ttf"; path = "../lib/core/assets/fonts/Onest-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +92,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				5DD296D6081841869361F059 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -96,6 +115,23 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		5DD296D6081841869361F059 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				F708CFDB04C64BC186DF0E11 /* Onest-Black.ttf */,
+				01E95CE6DE154D7291F699C7 /* Onest-Bold.ttf */,
+				1C6C00D62ABB436C90DFA58F /* Onest-ExtraBold.ttf */,
+				8D99C201D6274F60B3DE6286 /* Onest-ExtraLight.ttf */,
+				492C8030CB794CA18CD302C9 /* Onest-Light.ttf */,
+				F1D4ED81D3B84631AF31A23C /* Onest-Medium.ttf */,
+				DE45F06C954F4FA7AD56CC3C /* Onest-Regular.ttf */,
+				4CB4124CC724412CB23CD26E /* Onest-SemiBold.ttf */,
+				CE6754545FD4495F8E9AB60F /* Onest-Thin.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -159,6 +195,15 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				F1E982E06C904E14A742A49A /* Onest-Black.ttf in Resources */,
+				9E74A40EA1604EAC8CF30862 /* Onest-Bold.ttf in Resources */,
+				B7A7328E686143AF87F6464D /* Onest-ExtraBold.ttf in Resources */,
+				17AB53832847418BBE369695 /* Onest-ExtraLight.ttf in Resources */,
+				6F3B79B8F5034706B9701579 /* Onest-Light.ttf in Resources */,
+				E59268850D22419B9F6D979E /* Onest-Medium.ttf in Resources */,
+				2CB35DA7C4214B4E925FCBD3 /* Onest-Regular.ttf in Resources */,
+				DA2D89DDA9D64F42ADFFC2AC /* Onest-SemiBold.ttf in Resources */,
+				7E96713A280F452CB6AEF6D2 /* Onest-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

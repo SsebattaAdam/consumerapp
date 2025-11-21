@@ -13,7 +13,7 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomTextField from '../../../core/components/CustomerTextFiled';
 import { useAuthScreenModel } from '../authscreenModel';
-import { COLORS } from '../../../core/constants/app_constants';
+import { COLORS, FONTS } from '../../../core/constants/app_constants';
 
 // Using a book-related background image
 const backgroundImage = {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
     color: COLORS.white,
     textAlign: 'center',
     marginBottom: 32,
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
     color: COLORS.white,
     marginBottom: 32,
     textAlign: 'center',
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.white,
     marginBottom: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   forgotText: {
     fontSize: 14,
     color: COLORS.white,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: COLORS.white,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
   },
   successContainer: {
     flexDirection: 'row',
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: COLORS.white,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
   },
   primaryButton: {
     backgroundColor: COLORS.tertiary,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   dividerText: {
     color: COLORS.white,
     fontSize: 14,
-    fontWeight: '400',
+    fontFamily: FONTS.regular,
     marginHorizontal: 16,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
@@ -363,13 +363,13 @@ const styles = StyleSheet.create({
   },
   googleIcon: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
     color: COLORS.dark22,
   },
   socialButtonText: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.dark22,
     textAlign: 'center',
   },
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   footerLink: {
     fontSize: 14,
     color: COLORS.white,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,

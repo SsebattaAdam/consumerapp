@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../core/app_state/app_state';
 import DynamicHeader from '../../../core/components/headercomponet';
-import { COLORS } from '../../../core/constants/app_constants';
+import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { Avatar } from 'react-native-paper';
 import { userAuth } from '../../../features/auth/repositry/authContextProvider';
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.dark2,
     marginBottom: 4,
   },
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.gray,
     marginBottom: 4,
   },
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.dark2,
   },
   menuIcon: {
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
     color: COLORS.white,
   },
 });

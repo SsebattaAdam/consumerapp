@@ -22,6 +22,39 @@ export const COLORS = {
   Koffgreen:'#1C7A68'
 };
 
+// Onest Font Family
+export const FONTS = {
+  // Font weights mapping
+  thin: 'Onest-Thin',
+  extraLight: 'Onest-ExtraLight',
+  light: 'Onest-Light',
+  regular: 'Onest-Regular',
+  medium: 'Onest-Medium',
+  semiBold: 'Onest-SemiBold',
+  bold: 'Onest-Bold',
+  extraBold: 'Onest-ExtraBold',
+  black: 'Onest-Black',
+  
+  // Helper functions for common font weights
+  // Maps fontWeight numbers/strings to Onest font variants
+  getFontWeight: (weight: string | number): string => {
+    const weightMap: { [key: string]: string } = {
+      '100': 'Onest-Thin',
+      '200': 'Onest-ExtraLight',
+      '300': 'Onest-Light',
+      '400': 'Onest-Regular',
+      'normal': 'Onest-Regular',
+      '500': 'Onest-Medium',
+      '600': 'Onest-SemiBold',
+      '700': 'Onest-Bold',
+      'bold': 'Onest-Bold',
+      '800': 'Onest-ExtraBold',
+      '900': 'Onest-Black',
+    };
+    return weightMap[String(weight)] || 'Onest-Regular';
+  },
+};
+
 
 export const APP_BASE_URL = 'http://192.168.100.243:3000';
 

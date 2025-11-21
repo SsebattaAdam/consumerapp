@@ -7,7 +7,7 @@ import { RootState } from '../../../core/app_state/app_state';
 import { removeFromFavorites } from '../../../core/app_state/app_actions';
 import BookCard from '../componets/BookCard';
 import DynamicHeader from '../../../core/components/headercomponet';
-import { COLORS } from '../../../core/constants/app_constants';
+import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { TextInput, Avatar } from 'react-native-paper';
 import OrderSummaryModal from '../../payments/components/OrderSummaryModal';
 import { userAuth } from '../../../features/auth/repositry/authContextProvider';
@@ -90,8 +90,8 @@ const FavoritesScreen = () => {
       
       {userFavorites.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No favorites yet</Text>
-          <Text style={styles.emptySubtext}>Add books to your favorites to see them here</Text>
+          <Text style={[styles.emptyText, {fontFamily: FONTS.bold}]}>No favorites yet</Text>
+          <Text style={[styles.emptySubtext, {fontFamily: FONTS.thin}]}>Add books to your favorites to see them here</Text>
         </View>
       ) : filteredFavorites.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.dark2,
     marginBottom: 8,
   },

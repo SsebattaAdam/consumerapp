@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Avatar } from "react-native-paper";
-import { COLORS } from "../constants/app_constants";
+import { COLORS, FONTS } from "../constants/app_constants";
 
 export default function DynamicHeader({ username = "User", leftIcon = "account", rightIcon = "bell", onRightPress, onLeftPress = undefined }) {
   return (
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
 
   username: {
     fontSize: 18,
-    fontWeight: "600",
+    fontFamily: FONTS.semiBold,
     color: COLORS.offWhite
   },
 

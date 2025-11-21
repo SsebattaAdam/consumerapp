@@ -13,7 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../core/app_state/app_state';
 import DynamicHeader from '../../../core/components/headercomponet';
-import { COLORS } from '../../../core/constants/app_constants';
+import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { Avatar } from 'react-native-paper';
 import { FLUTTERWAVE_CONFIG } from '../../../core/constants/flutterwave_config';
 import flutterwaveService from '../services/flutterwave_service';
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   userInfoName: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.dark2,
     marginBottom: 4,
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.dark2,
     marginBottom: 16,
   },
@@ -263,12 +263,12 @@ const styles = StyleSheet.create({
   },
   paymentMethodText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.medium,
     color: COLORS.dark2,
   },
   paymentMethodTextSelected: {
     color: COLORS.gray,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
   },
   checkIcon: {
     backgroundColor: 'transparent',
@@ -292,12 +292,12 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
     color: COLORS.dark2,
   },
   totalAmount: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.gray,
   },
   payButton: {
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   payButtonText: {
     color: COLORS.white,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
   },
   securityNote: {
     textAlign: 'center',

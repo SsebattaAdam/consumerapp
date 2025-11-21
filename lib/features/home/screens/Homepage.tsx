@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../core/app_state/app_state';
 import DynamicHeader from '../../../core/components/headercomponet';
-import { COLORS } from '../../../core/constants/app_constants';
+import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { Avatar, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BookSection from '../componets/BookSection';
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 
   exploretext: {
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: FONTS.semiBold,
     marginBottom: 20,
     color: COLORS.offWhite
   },
@@ -183,21 +183,21 @@ const styles = StyleSheet.create({
 
   discountTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.white,
     marginBottom: 4,
   },
 
   discountSubtitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FONTS.bold,
     color: COLORS.white,
     marginBottom: 8,
   },
 
   discountDescription: {
     fontSize: 14,
-    fontWeight: '400',
+    fontFamily: FONTS.regular,
     color: COLORS.white,
     lineHeight: 20,
     marginBottom: 16,
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   claimButtonText: {
     color: COLORS.white,
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FONTS.semiBold,
   },
 
   onbordingwithgradient: {
