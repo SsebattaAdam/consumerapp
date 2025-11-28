@@ -1,66 +1,145 @@
-# Flutterwave Payment Integration
+# MarzPay Payment Integration
 
-This folder contains the Flutterwave payment integration for the e-commerce app.
+This folder contains the MarzPay payment integration for the e-commerce app. MarzPay is a payment platform in Uganda that supports Mobile Money collections via MTN and Airtel.
 
 ## Structure
 
-- `screens/PaymentScreen.tsx` - Payment UI screen with order summary and payment method selection
-- `services/flutterwave_service.tsx` - Flutterwave service for payment processing
-- `flutterwave/` - Additional Flutterwave utilities (if needed)
+- `screens/PaymentScreen.tsx` - Payment UI screen with phone number input and payment processing
+- `services/marzpay_service.tsx` - MarzPay service for payment collection API
+- `components/OrderSummaryModal.tsx` - Order summary modal component
 
 ## Configuration
 
-Update your Flutterwave credentials in `lib/core/constants/flutterwave_config.tsx`:
+Update your MarzPay credentials in `lib/core/constants/marzpay_config.tsx`:
 
-1. Get your **Public Key** from Flutterwave Dashboard:
-   - Go to https://dashboard.flutterwave.com
-   - Navigate to Settings > API Keys
-   - Copy your Public Key (format: `FLWPUBK_TEST-xxxxxxxxxxxxx` for test mode)
+1. **API Credentials** (already configured):
+   - API Key: `marz_6lPvnnrCot5QMXd9`
+   - API Secret: `j4cw73BVcfue3Inrg8H5OaQN7ljadkVk`
+   - Base64 Authorization Header: Pre-encoded for convenience
 
-2. Update the config file with your actual Public Key
+2. **Base URL**: `https://wallet.wearemarz.com/api/v1`
 
-## Current Implementation
+3. **Current Mode**: Sandbox (for testing)
 
-The current implementation uses a **simulated payment** for testing purposes. 
+## Implementation Details
 
-### For Production:
+### Payment Flow
 
-You have two options:
+1. User selects a book and taps "Buy Now"
+2. Navigates to PaymentScreen
+3. User enters their mobile money phone number (with country code, e.g., +256781230949)
+4. System converts USD price to UGX (using exchange rate)
+5. User taps "Request Payment"
+6. App calls MarzPay API to initiate collection
+7. Payment request is sent to user's mobile money account
+8. User completes payment on their phone
+9. Success/Error alert is shown
 
-1. **Backend Integration (Recommended)**
-   - Create a backend API endpoint that initializes Flutterwave payments
-   - The backend should handle the actual Flutterwave API calls
-   - Your React Native app calls your backend, which then communicates with Flutterwave
+### API Endpoints Used
 
-2. **React Native Flutterwave Package**
-   - Install a React Native Flutterwave package (if available)
-   - Or create a native module bridge to the Android SDK
+- `POST /collect-money` - Initiate mobile money collection
+- `GET /collect-money/{uuid}` - Get collection details
+- `GET /balance` - Get account balance
+- `GET /collect-money/services` - Get available services
+
+### Features
+
+- ✅ Mobile Money collection (MTN/Airtel)
+- ✅ Automatic phone number formatting
+- ✅ Phone number validation
+- ✅ UUID generation for transaction references
+- ✅ Currency conversion (USD to UGX)
+- ✅ Error handling and user feedback
+- ✅ Sandbox mode support
+
+## Phone Number Format
+
+MarzPay requires phone numbers in international format:
+- **Format**: `+256xxxxxxxxx` (for Uganda)
+- **Example**: `+256781230949`
+- The service automatically formats numbers if country code is missing
+
+## Currency Conversion
+
+Currently uses a fixed exchange rate:
+- **Rate**: 1 USD = 3,700 UGX
+- **Location**: `PaymentScreen.tsx`
+- **Note**: In production, fetch real-time exchange rates from an API
+
+## Sandbox Mode
+
+The account is currently in **sandbox mode**:
+- No real transactions are processed
+- No real money is transferred
+- Perfect for testing the integration
+- All APIs return test responses
+
+To switch to live mode:
+1. Complete account verification in MarzPay dashboard
+2. Update `IS_SANDBOX: false` in `marzpay_config.tsx`
+
+## Error Handling
+
+The service handles various error scenarios:
+- Invalid phone number format
+- Amount validation (500 - 10,000,000 UGX)
+- Network errors
+- API errors (duplicate reference, validation errors, etc.)
+
+## Transaction Reference
+
+Each payment requires a unique UUID v4 reference:
+- Automatically generated using `generateUUID()` utility
+- Format: `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`
+- Stored in `lib/core/utils/uuid.ts`
 
 ## Testing
 
-Currently, the payment flow simulates a successful payment after 2 seconds. This allows you to test the UI and flow.
+### Test Phone Numbers
 
-To test with actual Flutterwave:
-1. Update the `flutterwave_service.tsx` to call your backend API
-2. Or integrate Flutterwave's web SDK using WebView
-3. Or create a native module for the Android SDK
+In sandbox mode, you can use any valid format phone number:
+- `+256700000000`
+- `+256781230949`
+- `0781230949` (will be auto-formatted to +256781230949)
 
-## Usage
+### Test Amounts
 
-When a user taps "Buy Now" on any book:
-1. Navigates to PaymentScreen
-2. User enters email and phone number
-3. Selects payment method
-4. Taps "Pay" button
-5. Payment is processed (currently simulated)
-6. Success/Error alert is shown
+- Minimum: 500 UGX
+- Maximum: 10,000,000 UGX
 
 ## Next Steps
 
-1. Get your Public Key from Flutterwave Dashboard
-2. Set up a backend API for payment processing
-3. Update `flutterwave_service.tsx` to call your backend
-4. Implement payment verification on your backend
-5. Test with Flutterwave test cards
+1. ✅ MarzPay integration complete
+2. ⏳ Test with real phone numbers (in sandbox mode)
+3. ⏳ Set up webhook endpoint for payment callbacks
+4. ⏳ Implement payment verification/status checking
+5. ⏳ Switch to live mode after testing
+6. ⏳ Add real-time exchange rate API integration
 
+## Webhook Setup (Future)
 
+To receive payment status updates:
+
+1. Create webhook endpoint in your backend
+2. Register webhook in MarzPay dashboard:
+   ```bash
+   POST /webhooks
+   {
+     "name": "Payment Webhook",
+     "url": "https://your-domain.com/webhook",
+     "event_type": "success",
+     "is_active": true
+   }
+   ```
+3. Handle webhook callbacks to update payment status
+
+## API Documentation
+
+Full API documentation: https://wallet.wearemarz.com/api/docs
+
+## Support
+
+For issues or questions:
+- MarzPay Dashboard: https://wallet.wearemarz.com
+- API Documentation: See MarzPay API docs
+- Support: Contact MarzPay support team

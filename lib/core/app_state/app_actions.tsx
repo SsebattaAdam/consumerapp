@@ -1,6 +1,7 @@
 import axios from "axios";
-import { LOGIN, LOGOUT, GET_USER_BOOKS, ADD_TO_FAVORITES, REMOVE_FROM_FAVORITES } from "./types"; 
+import { LOGIN, LOGOUT, GET_USER_BOOKS, ADD_TO_FAVORITES, REMOVE_FROM_FAVORITES, ADD_TRANSACTION, UPDATE_TRANSACTION_STATUS } from "./types"; 
 import { Dispatch } from "redux";
+import { Transaction } from "./userReducers";
  
 export const loginAction = () =>{
     return {
@@ -85,5 +86,33 @@ export const setCurrentUserId = (userId: string | null) => {
   return {
     type: "SET_CURRENT_USER_ID",
     payload: userId
+  };
+};
+
+export const addTransaction = (transaction: Transaction) => {
+  if (!transaction || !transaction.uuid || !transaction.bookId) {
+    console.error('addTransaction: Invalid transaction', transaction);
+    return {
+      type: ADD_TRANSACTION,
+      payload: null
+    };
+  }
+  return {
+    type: ADD_TRANSACTION,
+    payload: transaction
+  };
+};
+
+export const updateTransactionStatus = (uuid: string, status: Transaction['status'], updatedAt?: string) => {
+  if (!uuid || !status) {
+    console.error('updateTransactionStatus: Invalid parameters', { uuid, status });
+    return {
+      type: UPDATE_TRANSACTION_STATUS,
+      payload: null
+    };
+  }
+  return {
+    type: UPDATE_TRANSACTION_STATUS,
+    payload: { uuid, status, updatedAt: updatedAt || new Date().toISOString() }
   };
 };

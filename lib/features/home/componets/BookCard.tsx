@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { Avatar } from 'react-native-paper';
 
@@ -28,11 +29,22 @@ const BookCard: React.FC<Props> = ({
   onBuyNowPress,
   onPress 
 }) => {
+  const navigation = useNavigation();
+
+  const handleCardPress = () => {
+    if (onPress) {
+      onPress(book);
+    } else {
+      // Default: navigate to BookReader
+      navigation.navigate('BookReader' as never, { bookId: book.id } as never);
+    }
+  };
+
   return (
     <TouchableOpacity 
       style={styles.card} 
       activeOpacity={0.8}
-      onPress={() => onPress && onPress(book)}
+      onPress={handleCardPress}
     >
       <Image 
         source={{ uri: book.coverImage }} 

@@ -10,70 +10,157 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../core/app_state/app_state';
+import { addTransaction } from '../../../core/app_state/app_actions';
+import { Transaction } from '../../../core/app_state/userReducers';
+import transactionStatusService from '../services/transactionStatusService';
+import { userAuth } from '../../auth/repositry/authContextProvider';
 import DynamicHeader from '../../../core/components/headercomponet';
 import { COLORS, FONTS } from '../../../core/constants/app_constants';
 import { Avatar } from 'react-native-paper';
-import { FLUTTERWAVE_CONFIG } from '../../../core/constants/flutterwave_config';
-import flutterwaveService from '../services/flutterwave_service';
+import { MARZPAY_CONFIG } from '../../../core/constants/marzpay_config';
+import marzpayService from '../services/marzpay_service';
+import CustomTextField from '../../../core/components/CustomerTextFiled';
+import PaymentResponseModal from '../components/PaymentResponseModal';
 
 const PaymentScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const dispatch = useDispatch();
   const { username } = useSelector((state: RootState) => state.userData);
+  const { user } = userAuth();
   const { book } = route.params as { book: any };
 
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('card');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [phoneError, setPhoneError] = useState<string>('');
+  const [paymentResponse, setPaymentResponse] = useState<any>(null);
+  const [showResponseModal, setShowResponseModal] = useState(false);
 
-  // Get user email from Redux or use a default
-  const userEmail = `${username.toLowerCase().replace(/\s+/g, '')}@example.com`; // You can store actual email in Redux
+  // Convert USD price to UGX (approximate rate: 1 USD = 3700 UGX)
+  // In production, you should fetch real-time exchange rates
+  const USD_TO_UGX_RATE = 3700;
+  const amountInUGX = Math.round(book.price * USD_TO_UGX_RATE);
+
+  const handlePhoneNumberChange = (text: string) => {
+    setPhoneNumber(text);
+    setPhoneError('');
+  };
 
   const handlePayment = async () => {
+    // Validate phone number
+    if (!phoneNumber.trim()) {
+      setPhoneError('Phone number is required');
+      return;
+    }
+
+    // Format and validate phone number
+    const formattedPhone = marzpayService.formatPhoneNumber(phoneNumber.trim());
+    const validation = marzpayService.validatePhoneNumber(formattedPhone);
+    
+    if (!validation.valid) {
+      setPhoneError(validation.message || 'Invalid phone number format');
+      return;
+    }
+
     setIsProcessing(true);
+    setPhoneError('');
 
     try {
-      const txRef = flutterwaveService.generateTxRef();
+      const description = `Payment for "${book.title}" by ${username}`;
       
-      const paymentData = {
-        amount: book.price,
-        currency: FLUTTERWAVE_CONFIG.CURRENCY,
-        email: userEmail,
-        phoneNumber: '', 
-        txRef: txRef,
-        narration: `Payment for ${book.title}`,
-        bookTitle: book.title,
-      };
-
-      const response = await flutterwaveService.initializePayment(paymentData);
+      const response = await marzpayService.collectMoney(
+        amountInUGX,
+        formattedPhone,
+        description
+      );
 
       setIsProcessing(false);
 
-      if (response.status === 'success') {
-        Alert.alert(
-          'Payment Successful! ',
-          `Your payment of $${book.price.toFixed(2)} for "${book.title}" has been processed successfully.\n\nTransaction Reference: ${txRef}`,
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.goBack(),
-            },
-          ]
+      // Show response to user for 5 seconds
+      setPaymentResponse(response);
+      setShowResponseModal(true);
+
+      // If payment was initiated successfully, store transaction and start polling
+      if (response.status === 'success' && response.data?.transaction && user) {
+        const transactionData = response.data.transaction;
+        const collectionData = response.data.collection;
+
+        // Create transaction object
+        const transaction: Transaction = {
+          uuid: transactionData.uuid,
+          reference: transactionData.reference,
+          bookId: book.id,
+          bookTitle: book.title,
+          amount: collectionData?.amount?.raw || amountInUGX,
+          currency: collectionData?.amount?.currency || 'UGX',
+          phoneNumber: formattedPhone,
+          status: 'processing', // Initial status
+          createdAt: new Date().toISOString(),
+          userId: user.id,
+        };
+
+        // Store transaction in Redux
+        dispatch(addTransaction(transaction));
+
+        // Start polling transaction status
+        transactionStatusService.startPolling(
+          transaction.uuid,
+          (statusResult) => {
+            // Update transaction status in Redux
+            dispatch({
+              type: 'UPDATE_TRANSACTION_STATUS',
+              payload: {
+                uuid: transaction.uuid,
+                status: statusResult.status,
+                updatedAt: statusResult.updatedAt,
+              },
+            });
+
+            console.log(`📊 Transaction ${transaction.uuid} status updated: ${statusResult.status}`);
+          },
+          (error) => {
+            console.error(`❌ Error polling transaction ${transaction.uuid}:`, error);
+          }
         );
+
+        // Auto-close modal after 5 seconds and navigate to transaction status screen
+        setTimeout(() => {
+          setShowResponseModal(false);
+          navigation.navigate('TransactionStatus' as never, { 
+            transactionUuid: transaction.uuid,
+            bookId: book.id 
+          } as never);
+        }, 5000);
       } else {
-        Alert.alert('Payment Error', response.message || 'An error occurred while processing your payment. Please try again.');
+        // For errors, just close modal after 5 seconds (don't navigate)
+        setTimeout(() => {
+          setShowResponseModal(false);
+        }, 5000);
       }
     } catch (error: any) {
       setIsProcessing(false);
-      Alert.alert('Payment Error', error.message || 'An error occurred while processing your payment. Please try again.');
+      
+      // Show error response
+      const errorResponse = {
+        status: 'error' as const,
+        message: error.message || 'An error occurred while processing your payment. Please try again.',
+        error_code: 'NETWORK_ERROR',
+      };
+      
+      setPaymentResponse(errorResponse);
+      setShowResponseModal(true);
+      
+      // Auto-close after 5 seconds
+      setTimeout(() => {
+        setShowResponseModal(false);
+      }, 5000);
     }
   };
 
   const paymentMethods = [
-    { id: 'card', name: 'Card Payment', icon: 'credit-card' },
-    { id: 'mobile', name: 'Mobile Money', icon: 'cellphone' },
-    { id: 'bank', name: 'Bank Transfer', icon: 'bank' },
+    { id: 'mobile', name: 'Mobile Money (MTN/Airtel)', icon: 'cellphone' },
   ];
 
   return (
@@ -97,59 +184,62 @@ const PaymentScreen = () => {
         <View style={styles.userInfoSection}>
           <Text style={styles.userInfoLabel}>Paying as</Text>
           <Text style={styles.userInfoName}>{username}</Text>
-          <Text style={styles.userInfoEmail}>{userEmail}</Text>
+          <Text style={styles.userInfoEmail}>Mobile Money Payment</Text>
         </View>
 
-        {/* Payment Methods */}
+        {/* Payment Method */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Select Payment Method</Text>
+          <Text style={styles.sectionTitle}>Payment Method</Text>
           
-          {paymentMethods.map((method) => (
-            <TouchableOpacity
-              key={method.id}
-              style={[
-                styles.paymentMethodCard,
-                selectedPaymentMethod === method.id && styles.paymentMethodCardSelected,
-              ]}
-              onPress={() => setSelectedPaymentMethod(method.id)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.paymentMethodContent}>
-                <Avatar.Icon
-                  size={40}
-                  icon={method.icon}
-                  style={[
-                    styles.paymentIcon,
-                    selectedPaymentMethod === method.id && styles.paymentIconSelected,
-                  ]}
-                  color={selectedPaymentMethod === method.id ? COLORS.white : COLORS.gray}
-                />
-                <Text
-                  style={[
-                    styles.paymentMethodText,
-                    selectedPaymentMethod === method.id && styles.paymentMethodTextSelected,
-                  ]}
-                >
-                  {method.name}
-                </Text>
-              </View>
-              {selectedPaymentMethod === method.id && (
-                <Avatar.Icon
-                  size={24}
-                  icon="check-circle"
-                  style={styles.checkIcon}
-                  color={COLORS.gray}
-                />
-              )}
-            </TouchableOpacity>
-          ))}
+          <View style={styles.paymentMethodCard}>
+            <View style={styles.paymentMethodContent}>
+              <Avatar.Icon
+                size={40}
+                icon="cellphone"
+                style={styles.paymentIcon}
+                color={COLORS.white}
+              />
+              <Text style={styles.paymentMethodText}>
+                Mobile Money (MTN/Airtel)
+              </Text>
+            </View>
+            <Avatar.Icon
+              size={24}
+              icon="check-circle"
+              style={styles.checkIcon}
+              color={COLORS.gray}
+            />
+          </View>
+        </View>
+
+        {/* Phone Number Input */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Mobile Money Number</Text>
+          <Text style={styles.inputHint}>
+            Enter your phone number with country code (e.g., +256781230949)
+          </Text>
+          <CustomTextField
+            label=""
+            placeholder="+256781230949"
+            value={phoneNumber}
+            onChangeText={handlePhoneNumberChange}
+            keyboardType="phone-pad"
+            autoCapitalize="none"
+          />
+          {phoneError ? (
+            <Text style={styles.errorText}>{phoneError}</Text>
+          ) : null}
         </View>
 
         {/* Total */}
         <View style={styles.totalSection}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total Amount</Text>
+            <Text style={styles.totalLabel}>Book Price</Text>
             <Text style={styles.totalAmount}>${book.price.toFixed(2)}</Text>
+          </View>
+          <View style={[styles.totalRow, styles.convertedAmountRow]}>
+            <Text style={styles.convertedLabel}>Amount (UGX)</Text>
+            <Text style={styles.convertedAmount}>{amountInUGX.toLocaleString()} UGX</Text>
           </View>
         </View>
 
@@ -157,13 +247,15 @@ const PaymentScreen = () => {
         <TouchableOpacity
           style={[styles.payButton, isProcessing && styles.payButtonDisabled]}
           onPress={handlePayment}
-          disabled={isProcessing}
+          disabled={isProcessing || !phoneNumber.trim()}
           activeOpacity={0.8}
         >
           {isProcessing ? (
             <ActivityIndicator color={COLORS.white} />
           ) : (
-            <Text style={styles.payButtonText}>Pay ${book.price.toFixed(2)}</Text>
+            <Text style={styles.payButtonText}>
+              Request Payment ({amountInUGX.toLocaleString()} UGX)
+            </Text>
           )}
         </TouchableOpacity>
 
@@ -171,6 +263,19 @@ const PaymentScreen = () => {
           🔒 Your payment is secure and encrypted
         </Text>
       </ScrollView>
+
+      {/* Payment Response Modal - Shows API response for 5 seconds */}
+      <PaymentResponseModal
+        visible={showResponseModal}
+        response={paymentResponse}
+        onClose={() => {
+          setShowResponseModal(false);
+          if (paymentResponse?.status === 'success') {
+            navigation.goBack();
+          }
+        }}
+        duration={5000}
+      />
     </SafeAreaView>
   );
 };
@@ -327,6 +432,35 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 16,
     marginBottom: 20,
+  },
+  inputHint: {
+    fontSize: 12,
+    color: COLORS.dark22,
+    marginBottom: 8,
+    fontFamily: FONTS.regular,
+  },
+  errorText: {
+    fontSize: 12,
+    color: COLORS.red,
+    marginTop: -12,
+    marginBottom: 8,
+    fontFamily: FONTS.medium,
+  },
+  convertedAmountRow: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.offWhite,
+  },
+  convertedLabel: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    color: COLORS.dark22,
+  },
+  convertedAmount: {
+    fontSize: 18,
+    fontFamily: FONTS.bold,
+    color: COLORS.gray,
   },
 });
 

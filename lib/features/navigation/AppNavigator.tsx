@@ -7,6 +7,9 @@ import LoginScreen from '../auth/screens/loginscreen';
 import BookListScreen from '../home/screens/BookListScreen';
 import FavoritesScreen from '../home/screens/FavoritesScreen';
 import PaymentScreen from '../payments/screens/PaymentScreen';
+import TransactionStatusScreen from '../payments/screens/TransactionStatusScreen';
+import BookReaderScreen from '../home/screens/BookReaderScreen';
+import PDFViewerScreen from '../home/screens/PDFViewerScreen';
 import { userAuth } from '../auth/repositry/authContextProvider';
 
 export type RootStackParamList = {
@@ -15,6 +18,9 @@ export type RootStackParamList = {
   BookList: { title: string; data: any[] };
   Favorites: undefined;
   Payment: { book: any };
+  TransactionStatus: { transactionUuid: string; bookId: number };
+  BookReader: { bookId: number };
+  PDFViewer: { pdfUrl: string; bookTitle: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -35,6 +41,9 @@ function NavigatorContent() {
             <Stack.Screen name="BookList" component={BookListScreen} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
+            <Stack.Screen name="TransactionStatus" component={TransactionStatusScreen} />
+            <Stack.Screen name="BookReader" component={BookReaderScreen} />
+            <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

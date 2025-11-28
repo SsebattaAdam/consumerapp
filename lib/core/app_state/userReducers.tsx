@@ -1,8 +1,22 @@
-import { GET_USER_BOOKS, LOGIN, LOGOUT, ADD_TO_FAVORITES, REMOVE_FROM_FAVORITES } from "./types";
+import { GET_USER_BOOKS, LOGIN, LOGOUT, ADD_TO_FAVORITES, REMOVE_FROM_FAVORITES, ADD_TRANSACTION, UPDATE_TRANSACTION_STATUS } from "./types";
 import { AnyAction } from "redux";
 
 interface UserAction extends AnyAction {
     payload?: any;
+}
+
+export interface Transaction {
+    uuid: string;
+    reference: string;
+    bookId: number;
+    bookTitle: string;
+    amount: number;
+    currency: string;
+    phoneNumber: string;
+    status: 'processing' | 'successful' | 'failed' | 'cancelled' | 'pending';
+    createdAt: string;
+    updatedAt?: string;
+    userId: string;
 }
 
 const initialState ={
@@ -10,7 +24,8 @@ isSignedIn: false,
 username : "Adam",
 userBooks : [],
 favorites: [], // Array of { book, userId } objects
-currentUserId: null as string | null
+currentUserId: null as string | null,
+transactions: [] as Transaction[] // Array of user transactions
 }
 
 export default (state = initialState, action: UserAction) =>{
@@ -53,6 +68,34 @@ export default (state = initialState, action: UserAction) =>{
             }
         case "SET_CURRENT_USER_ID":
             return {...state, currentUserId: payload}
+        case ADD_TRANSACTION:
+            // payload should be a Transaction object
+            if (!payload || !payload.uuid || !payload.bookId) {
+                console.warn('ADD_TRANSACTION: Invalid payload', payload);
+                return state;
+            }
+            // Check if transaction already exists
+            const transactionExists = state.transactions.some(
+                (tx: Transaction) => tx.uuid === payload.uuid
+            );
+            if (transactionExists) {
+                return state; // Don't add duplicate
+            }
+            return {...state, transactions: [...state.transactions, payload]}
+        case UPDATE_TRANSACTION_STATUS:
+            // payload should be { uuid, status, updatedAt? }
+            if (!payload || !payload.uuid || !payload.status) {
+                console.warn('UPDATE_TRANSACTION_STATUS: Invalid payload', payload);
+                return state;
+            }
+            return {
+                ...state,
+                transactions: state.transactions.map((tx: Transaction) =>
+                    tx.uuid === payload.uuid
+                        ? { ...tx, status: payload.status, updatedAt: payload.updatedAt || new Date().toISOString() }
+                        : tx
+                )
+            }
 
 
     }

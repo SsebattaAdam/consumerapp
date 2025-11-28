@@ -1,4 +1,16 @@
+// Import with error handling in case @env fails to load
+let ENV_APP_BASE_URL = '';
+let ENV_GOOGLE_API_KEY = '';
 
+try {
+  const env = require('@env');
+  ENV_APP_BASE_URL = env.APP_BASE_URL || '';
+  ENV_GOOGLE_API_KEY = env.GOOGLE_API_KEY || '';
+} catch (error) {
+  console.warn('Failed to load app environment variables, using defaults:', error);
+  ENV_APP_BASE_URL = 'http://192.168.100.243:3000';
+  ENV_GOOGLE_API_KEY = '';
+}
 
 import { Dimensions } from 'react-native';
 
@@ -56,10 +68,9 @@ export const FONTS = {
 };
 
 
-export const APP_BASE_URL = 'http://192.168.100.243:3000';
+export const APP_BASE_URL = ENV_APP_BASE_URL || 'http://localhost:3000';
 
-
-export const GOOGLE_API_KEY = ''; 
+export const GOOGLE_API_KEY = ENV_GOOGLE_API_KEY || ''; 
 
 
 const { width, height } = Dimensions.get('window');
